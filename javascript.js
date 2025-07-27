@@ -1,82 +1,127 @@
-console.log("Hello, Jade GC!")
-
+// DEFINE function to select random choice for computer
 function getComputerChoice() {
-// CREATE three choices - rock, paper, & scissors
-    let choices = ["rock", "paper", "scissors"]; // create array of three options
-// SELECT choice at random
+    let choices = ["rock", "paper", "scissors"];
     let number = Math.floor(Math.random() * 3); // store random number from 0-2
-// RETURN randomly selected choice
-    console.log("Computer chooses " + choices[number]);
-    return choices[number]; // return option from choices indexed at number
+    console.log("Computer chooses " + choices[number]); // state computer choice in console
+    // need to update the dom with computer selection
+    return choices[number]; // return computer choice
 }
 
-function getHumanChoice() {
-// PROMPT user to input choice    
-    let choice = prompt("Rock, paper, or scissors?"); // store user answer in variable
+let humanScore = 0;
+let computerScore = 0;
+let gameOver = false;
 
-// RESPOND to user choice, assuming it is valid    
-    if (choice.toLowerCase() === "rock") {
-        console.log("You choose rock!") // return message for rock
-    } else if (choice.toLowerCase() === "paper") {
-        console.log("You choose paper!") // return message for paper
-    } else if (choice.toLowerCase() === "scissors") {
-        console.log("You choose scissors!") // return message for scissors
+// DEFINE function to play single round of game
+function playRound(humanChoice, computerChoice) {
+    if (humanChoice.toLowerCase() === computerChoice) {
+        console.log("Its a draw!");
+        console.log(humanScore + " " + computerScore);
+        return;
+    } else if (humanChoice.toLowerCase() === "rock" && computerChoice === "paper") {
+        computerScore++;
+        console.log("You lose! Paper beats rock.");
+        console.log(humanScore + " " + computerScore);
+        return;
+    } else if (humanChoice.toLowerCase() === "rock" && computerChoice === "scissors") {
+        humanScore++;
+        console.log("You win! Rock beats scissors.");
+        console.log(humanScore + " " + computerScore);
+        return;
+    } else if (humanChoice.toLowerCase() === "paper" && computerChoice === "rock") {
+        humanScore++;
+        console.log("You win! Paper beats rock.");
+        console.log(humanScore + " " + computerScore);
+        return;
+    } else if (humanChoice.toLowerCase() === "paper" && computerChoice === "scissors") {
+        computerScore++;
+        console.log("You lose! Scissors beat paper.");
+        console.log(humanScore + " " + computerScore);
+        return;
+    } else if (humanChoice.toLowerCase() === "scissors" && computerChoice === "rock") {
+        computerScore++;
+        console.log("You lose! Rock beats scissors.");
+        console.log(humanScore + " " + computerScore);
+        return;
+    } else if (humanChoice.toLowerCase() === "scissors" && computerChoice === "paper") {
+        humanScore++;
+        console.log("You win! Scissors beat paper.");
+        console.log(humanScore + " " + computerScore);
+        return;
     }
-// CLOSE function and return user answer    
-    return choice
 }
 
-let humanScore = 0 // create variable for human score
-let computerScore = 0 // create variable for computer score
+// POPULATE scoreboard
+const results = document.querySelector("#scoreboard");
+const scoreBoard = document.createElement("h1"); 
+scoreBoard.textContent = "Score";
+results.appendChild(scoreBoard);
+const player = document.createElement("h2");
+results.appendChild(player);
+const computer = document.createElement("h2");
+results.appendChild(computer);
 
-function playGame () {
-    function playRound(humanChoice, computerChoice) {
-        if (humanChoice.toLowerCase() === computerChoice) {
-            return "It's a draw!"
-        } else if (humanChoice.toLowerCase() === "rock" && computerChoice === "paper") {
-            computerScore += 1
-            return "You lose! Paper beats rock."
-        } else if (humanChoice.toLowerCase() === "rock" && computerChoice === "scissors") {
-            humanScore += 1
-            return "You win! Rock beats scissors."
-        } else if (humanChoice.toLowerCase() === "paper" && computerChoice === "rock") {
-            humanScore += 1
-            return "You win! Paper beats rock."
-        } else if (humanChoice.toLowerCase() === "paper" && computerChoice === "scissors") {
-            computerScore += 1
-            return "You lose! Scissors beat paper."
-        } else if (humanChoice.toLowerCase() === "scissors" && computerChoice === "rock") {
-            computerScore += 1
-            return "You lose! Rock beats scissors."
-        } else if (humanChoice.toLowerCase() === "scissors" && computerChoice === "paper") {
-            humanScore += 1
-            return "You win! Scissors beat paper."
+// UPDATE scoreboard & check for winning state
+function updateScoreboard() {
+    if (humanScore == 5) {
+        player.textContent = `Player wins!!!`;
+        endGame();
+        const playAgain = document.createElement("button");
+        playAgain.textContent = "Play Again";
+        playAgain.addEventListener("click", () => {
+            humanScore = 0;
+            computerScore = 0;
+            gameOver = false;
+            player.textContent = "";
+            computer.textContent = "";
+            results.removeChild(playAgain);
+        })
+        results.appendChild(playAgain);
+        } else {player.textContent = `Player - ${humanScore}`;
+    }
+    if (computerScore == 5) {
+        computer.textContent = `Computer wins!!!`;
+        endGame();
+        const playAgain = document.createElement("button");
+        playAgain.textContent = "Play Again";
+        playAgain.addEventListener("click", () => {
+            humanScore = 0;
+            computerScore = 0;
+            gameOver = false;
+            player.textContent = "";
+            computer.textContent = "";
+            results.removeChild(playAgain);
+        })
+        results.appendChild(playAgain);
+        } else {computer.textContent = `Computer - ${computerScore}`;
+    }  
+}
+
+// DELEGATE interaction with choice buttons & check for winning state
+let playerChoice = document.querySelector("#playerChoice");
+playerChoice.addEventListener("click", (event) => {
+    let target = event.target;
+    if (gameOver === false) {
+        switch(target.id) {
+          case "rck":
+              playRound("rock", getComputerChoice());
+              updateScoreboard();
+              break;
+          case "ppr":
+              playRound("paper", getComputerChoice());
+              updateScoreboard();
+              break;
+          case "scs":
+              playRound("scissors", getComputerChoice());
+              updateScoreboard();
+              break;
         }
-    }
+    } else {playerChoice.removeEventListener}
+});
 
-let roundOne = playRound(getHumanChoice(), getComputerChoice())
-console.log("Human: " + humanScore)
-console.log("Computer: " + computerScore)
-let roundTwo = playRound(getHumanChoice(), getComputerChoice())
-console.log("Human: " + humanScore)
-console.log("Computer: " + computerScore)
-let roundThree = playRound(getHumanChoice(), getComputerChoice())
-console.log("Human: " + humanScore)
-console.log("Computer: " + computerScore)
-let roundFour = playRound(getHumanChoice(), getComputerChoice())
-console.log("Human: " + humanScore)
-console.log("Computer: " + computerScore)
-let roundFive = playRound(getHumanChoice(), getComputerChoice())
-console.log("Final score - Human " + humanScore + ", Computer " + computerScore)
-if (humanScore > computerScore) {
-    console.log("Congrats best friend, you did that!")
-} else if (humanScore < computerScore) {
-    console.log("Tough luck, bookie, the computer is smarter.")
-} else if (humanScore === computerScore) {
-    console.log("Victor undetermined, new game suggested")
-}
-// console.log("Human: " + humanScore)
-// console.log("Computer: " + computerScore)
-}
+// DEFINE game over state
+function endGame() {
+    gameOver = true;
+};
 
-console.log(playGame())
+
+// TODO - implement game over state
